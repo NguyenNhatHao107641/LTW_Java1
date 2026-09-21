@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quản lý sinh viên</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f6fa;
+            color: #222;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: #20242d;
+            color: white;
+        }
+
+        .logo {
+            height: 65px;
+            display: flex;
+            align-items: center;
+            padding-left: 25px;
+            font-size: 21px;
+            border-bottom: 1px solid #3b3f47;
+        }
+
+        .menu {
+            padding: 20px 10px;
+        }
+
+        .menu-item {
+            display: block;
+            color: #ddd;
+            text-decoration: none;
+            padding: 14px 20px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: #3c414c;
+            color: white;
+        }
+
+        .menu-icon {
+            margin-right: 12px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 270px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 65px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 30px;
+            color: #444;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+        }
+
+        .breadcrumb {
+            color: #777;
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            min-height: 75px;
+            padding: 18px 20px;
+            border-bottom: 1px solid #ddd;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* ================= BUTTON ================= */
+
+        button {
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #1677ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #095dcc;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #111;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* ================= SEARCH ================= */
+
+        .search-box {
+            display: flex;
+            width: 650px;
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            height: 43px;
+            padding: 0 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 15px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #1677ff;
+        }
+
+        .search-box button {
+            border-radius: 0 5px 5px 0;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #fafafa;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f4f5f7;
+        }
+
+        tbody tr:hover {
+            background: #e9eef5;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 550px;
+            max-width: 95%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #ddd;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .close {
+            font-size: 28px;
+            color: #777;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #ddd;
+            text-align: right;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 42px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 0 12px;
+            font-size: 15px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1677ff;
+        }
+
+        /* ================= MESSAGE ================= */
+
+        #message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 14px 20px;
+            color: white;
+            border-radius: 5px;
+            display: none;
+            z-index: 2000;
+        }
+
+        #message.success {
+            background: #198754;
+        }
+
+        #message.error {
+            background: #dc3545;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .logo {
+                font-size: 0;
+            }
+
+            .main {
+                margin-left: 70px;
+            }
+
+            .menu-item {
+                text-align: center;
+                font-size: 0;
+            }
+
+            .menu-icon {
+                font-size: 20px;
+                margin: 0;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<!-- =====================================================
+     SIDEBAR
+====================================================== -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        University Training
+    </div>
+
+    <div class="menu">
+
+        <a href="student.html" class="menu-item active">
+            <span class="menu-icon">👥</span>
+            Sinh viên
+        </a>
+
+        <a href="#" class="menu-item">
+            <span class="menu-icon">📖</span>
+            Học phần
+        </a>
+
+        <a href="#" class="menu-item">
+            <span class="menu-icon">🏫</span>
+            Phòng học
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN
+====================================================== -->
+
+<div class="main">
+
+    <div class="topbar">
+        Quản lý đào tạo
+    </div>
+
+
+    <div class="content">
+
+        <div class="page-header">
+
+            <h1>Quản lý sinh viên</h1>
+
+            <div class="breadcrumb">
+                Home &nbsp;/&nbsp; Sinh viên
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div class="card-title">
+                    👥 &nbsp; Danh sách sinh viên
+                </div>
+
+                <button
+                    class="btn-primary"
+                    onclick="openAddModal()">
+
+                    ＋ Thêm sinh viên
+
+                </button>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <!-- SEARCH -->
+
+                <div class="search-box">
+
+                    <input
+                        id="searchInput"
+                        type="text"
+                        placeholder="Tìm mã SV, họ tên, email, số điện thoại..."
+                    >
+
+                    <button
+                        class="btn-primary"
+                        onclick="searchStudents()">
+
+                        🔍 Tìm kiếm
+
+                    </button>
+
+                </div>
+
+
+                <!-- TABLE -->
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+
+                            <th>STT</th>
+
+                            <th>Mã sinh viên</th>
+
+                            <th>Họ và tên</th>
+
+                            <th>Email</th>
+
+                            <th>Số điện thoại</th>
+
+                            <th>Lớp</th>
+
+                            <th>Thao tác</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="studentTableBody">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL
+====================================================== -->
+
+<div class="modal" id="studentModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+                Thêm sinh viên
+            </h2>
+
+            <span
+                class="close"
+                onclick="closeModal()">
+
+                ×
+
+            </span>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <form id="studentForm">
+
+                <input
+                    type="hidden"
+                    id="studentId"
+                >
+
+
+                <div class="form-group">
+
+                    <label>
+                        Mã sinh viên
+                    </label>
+
+                    <input
+                        type="text"
+                        id="studentCode"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Họ và tên
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullName"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Số điện thoại
+                    </label>
+
+                    <input
+                        type="text"
+                        id="phone"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Lớp
+                    </label>
+
+                    <input
+                        type="text"
+                        id="className"
+                    >
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="btn-secondary"
+                onclick="closeModal()">
+
+                Hủy
+
+            </button>
+
+            <button
+                class="btn-primary"
+                onclick="saveStudent()">
+
+                Lưu
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="message"></div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+    /*
+     * Backend:
+     *
+     * GET     /api/students
+     * GET     /api/students/{id}
+    * GET     /api/students/search?keyword=...
+     * POST    /api/students
+    * POST    /api/students/update/{id}
+    * POST    /api/students/delete/{id}
+     */
+
+    const API_URL = "/api/students";
+
+
+    // =====================================================
+    // LOAD STUDENTS
+    // =====================================================
+
+    async function loadStudents(keyword = "") {
+
+        try {
+
+            let url = API_URL;
+
+            if (keyword.trim() !== "") {
+
+                url =
+                    API_URL +
+                    "/search?keyword=" +
+                    encodeURIComponent(keyword);
+
+            }
+
+
+            const response = await fetch(url);
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " + response.status
+                );
+
+            }
+
+
+            const data = await response.json();
+
+
+            renderStudents(data);
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Không thể tải danh sách sinh viên!",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // RENDER TABLE
+    // =====================================================
+
+    function renderStudents(students) {
+
+        const tbody =
+            document.getElementById(
+                "studentTableBody"
+            );
+
+
+        tbody.innerHTML = "";
+
+
+        if (!students || students.length === 0) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7"
+                        style="text-align:center">
+                        Không có dữ liệu
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        students.forEach((student, index) => {
+
+            const tr =
+                document.createElement("tr");
+
+
+            tr.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${student.studentCode ?? ""}
+                </td>
+
+                <td>
+                    ${student.fullName ?? ""}
+                </td>
+
+                <td>
+                    ${student.email ?? ""}
+                </td>
+
+                <td>
+                    ${student.phone ?? ""}
+                </td>
+
+                <td>
+                    ${student.className ?? ""}
+                </td>
+
+                <td>
+
+                    <div class="actions">
+
+                        <button
+                            class="btn-warning"
+                            onclick="editStudent('${student.id}')">
+
+                            ✏ Sửa
+
+                        </button>
+
+                        <button
+                            class="btn-danger"
+                            onclick="deleteStudent('${student.id}')">
+
+                            🗑 Xóa
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(tr);
+
+        });
+
+    }
+
+
+    // =====================================================
+    // SEARCH
+    // =====================================================
+
+    function searchStudents() {
+
+        const keyword =
+            document
+                .getElementById("searchInput")
+                .value
+                .trim();
+
+
+        loadStudents(keyword);
+
+    }
+
+
+    document
+        .getElementById("searchInput")
+        .addEventListener("keyup", function(event) {
+
+            if (event.key === "Enter") {
+
+                searchStudents();
+
+            }
+
+        });
+
+
+    // =====================================================
+    // OPEN ADD
+    // =====================================================
+
+    function openAddModal() {
+
+        document
+            .getElementById("studentForm")
+            .reset();
+
+
+        document
+            .getElementById("studentId")
+            .value = "";
+
+
+        document
+            .getElementById("modalTitle")
+            .innerText =
+            "Thêm sinh viên";
+
+
+        document
+            .getElementById("studentModal")
+            .classList.add("show");
+
+    }
+
+
+    // =====================================================
+    // CLOSE MODAL
+    // =====================================================
+
+    function closeModal() {
+
+        document
+            .getElementById("studentModal")
+            .classList.remove("show");
+
+    }
+
+
+    // =====================================================
+    // GET STUDENT BY UUID
+    // =====================================================
+
+    async function editStudent(id) {
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/${id}`
+                );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Không tìm thấy sinh viên"
+                );
+
+            }
+
+
+            const student =
+                await response.json();
+
+
+            document
+                .getElementById("studentId")
+                .value =
+                student.id;
+
+
+            document
+                .getElementById("studentCode")
+                .value =
+                student.studentCode ?? "";
+
+
+            document
+                .getElementById("fullName")
+                .value =
+                student.fullName ?? "";
+
+
+            document
+                .getElementById("email")
+                .value =
+                student.email ?? "";
+
+
+            document
+                .getElementById("phone")
+                .value =
+                student.phone ?? "";
+
+
+            document
+                .getElementById("className")
+                .value =
+                student.className ?? "";
+
+
+            document
+                .getElementById("modalTitle")
+                .innerText =
+                "Sửa sinh viên";
+
+
+            document
+                .getElementById("studentModal")
+                .classList.add("show");
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Không thể lấy thông tin sinh viên!",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // ADD / UPDATE
+    // =====================================================
+
+    async function saveStudent() {
+
+        const id =
+            document
+                .getElementById("studentId")
+                .value;
+
+
+        const student = {
+
+            studentCode:
+                document
+                    .getElementById("studentCode")
+                    .value
+                    .trim(),
+
+            fullName:
+                document
+                    .getElementById("fullName")
+                    .value
+                    .trim(),
+
+            email:
+                document
+                    .getElementById("email")
+                    .value
+                    .trim(),
+
+            phone:
+                document
+                    .getElementById("phone")
+                    .value
+                    .trim(),
+
+            className:
+                document
+                    .getElementById("className")
+                    .value
+                    .trim()
+
+        };
+
+
+        // Kiểm tra dữ liệu
+
+        if (!student.studentCode ||
+            !student.fullName ||
+            !student.email) {
+
+            showMessage(
+                "Vui lòng nhập đầy đủ thông tin!",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            let response;
+
+
+            // ==============================
+            // ADD
+            // ==============================
+
+            if (!id) {
+
+                response =
+                    await fetch(
+                        API_URL,
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(student)
+
+                        }
+                    );
+
+            }
+
+            // ==============================
+            // UPDATE
+            // ==============================
+
+            else {
+
+                response =
+                    await fetch(
+                        `${API_URL}/update/${id}`,
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(student)
+
+                        }
+                    );
+
+            }
+
+
+            if (!response.ok) {
+
+                const text =
+                    await response.text();
+
+                throw new Error(
+                    text ||
+                    "HTTP " + response.status
+                );
+
+            }
+
+
+            closeModal();
+
+
+            showMessage(
+                id
+                    ? "Cập nhật sinh viên thành công!"
+                    : "Thêm sinh viên thành công!",
+                "success"
+            );
+
+
+            loadStudents();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Lỗi khi lưu sinh viên!",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // DELETE
+    // =====================================================
+
+    async function deleteStudent(id) {
+
+        const result =
+            confirm(
+                "Bạn có chắc muốn xóa sinh viên này?"
+            );
+
+
+        if (!result) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/delete/${id}`,
+                    {
+                        method: "POST"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " + response.status
+                );
+
+            }
+
+
+            showMessage(
+                "Xóa sinh viên thành công!",
+                "success"
+            );
+
+
+            loadStudents();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Không thể xóa sinh viên!",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // MESSAGE
+    // =====================================================
+
+    function showMessage(text, type) {
+
+        const message =
+            document.getElementById("message");
+
+
+        message.innerText = text;
+
+        message.className = type;
+
+        message.style.display = "block";
+
+
+        setTimeout(function() {
+
+            message.style.display = "none";
+
+        }, 3000);
+
+    }
+
+
+    // =====================================================
+    // START
+    // =====================================================
+
+    loadStudents();
+
+</script>
+
+</body>
+</html>

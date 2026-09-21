@@ -5,11 +5,9 @@ import java.util.UUID;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,13 +28,14 @@ public class StudentController {
 
 
     @GetMapping
-    public List<Student> listStudents(
-            @RequestParam(required = false) String keyword) {
-
-
-        return studentService.search(keyword);
+    public List<Student> listStudents() {
+        return studentService.getAll();
     }
 
+    @GetMapping("/search")
+    public List<Student> searchStudents(@RequestParam String keyword) {
+        return studentService.search(keyword);
+    }
 
     @GetMapping("/{id}")
     public Student getStudent(@PathVariable UUID id) {
@@ -52,7 +51,7 @@ public class StudentController {
     }
 
 
-    @PutMapping("/{id}")
+    @PostMapping("/update/{id}")
     public Student updateStudent(
             @PathVariable UUID id,
             @RequestBody Student student) {
@@ -65,7 +64,7 @@ public class StudentController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/delete/{id}")
     public void deleteStudent(@PathVariable UUID id) {
 
 
